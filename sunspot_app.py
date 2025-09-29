@@ -79,7 +79,7 @@ def plot_advanced_sunspot_visualizations(df, sunactivity_col='SUNACTIVITY'):
 
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     return fig
-
+    
 # 메인 앱
 st.title('🌞 태양흑점 데이터 분석 대시보드 🌞')
 st.markdown("""
@@ -87,20 +87,70 @@ st.markdown("""
     """)
 
 try:
-    # 데이터 로드
+    # 데이터 로드 
     df = load_data('data/sunspots.csv')
 
-    # 필터링된 데이터 - 전체 데이터 사용
-    filtered_df = df
+    # 사이드바에 파라미터 조정 슬라이더 추가
+    st.sidebar.header("파라미터 조정")
 
-    # 시각화
+    # 연도범위선택
+    year_range = st.sidebar.slider(
+        '연도 범위 선택',
+        min_value=int(df['YEAR'].min()),
+        max_value=int(df['YEAR'].max()),
+        value=(int(df['YEAR'].min()), int(df['YEAR'].max()))
+    )
+
+    # 히스토그램 빈(bin) 수 조절
+    hist_bins = st.sidebar.slider(
+        '히스토그램 구간 수',
+        min_value=5,
+        max_value=100,
+        value=30
+    )
+    
+    # 추세선 차수 조절
+    trend_degree = st.sidebar.slider(
+        '추세선 차수',
+        min_value=1,
+        max_value=5,
+        value=1
+    )
+    
+    # 산점도 점 크기 조절
+    point_size = st.sidebar.slider(
+        '산점도 점 크기',
+        min_value=1,
+        max_value=50,
+        value=10
+    )
+    
+    # 산점도 투명도 조절
+    point_alpha = st.sidebar.slider(
+        '산점도 투명도',
+        min_value=0.1,
+        max_value=1.0,
+        value=0.5,
+        step=0.1
+    )
+    
+    # 필터링된 데이터
+    filtered_df = df[(df['YEAR'] >= year_range[0]) & (df['YEAR'] <= year_range[1])]
+
+    # 시각화 
     if not filtered_df.empty:
         st.subheader('태양흑점 데이터 종합 시각화')
-        fig = plot_advanced_sunspot_visualizations(filtered_df)
-        st.pyplot(fig)
+        fig = plot_advanced_sunspot_visualizations(
+            filtered_df,
+            hist_bins=hist_bins,
+            trend_degree=trend_degree,
+            point_size=point_size,
+            point_alpha=point_alpha
+        ) 
+        st.pyplot(fig) 
     else:
-        st.warning("데이터가 없습니다.")
+        st.warning("데이터가 없습니다.") 
 
-except Exception as e:
-    st.error(f"오류가 발생했습니다: {e}")
+except Exception as e: 
+    st.error(f"오류가 발생했습니다: {e}") 
     st.info("데이터 파일의 구조를 확인해주세요. 'data/sunspots.csv' 파일이 존재하고 'YEAR'와 'SUNACTIVITY' 컬럼이 있어야 합니다.")
