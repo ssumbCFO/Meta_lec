@@ -10,7 +10,7 @@ from scipy.stats import gaussian_kde
 
 @st.cache_data
 def load_data(file_path):
-    df = pd.read_csv(file_path)
+    df = pd.read_csv('sunspots.csv')
     if 'YEAR' in df.columns:
         # 소수점 제거 후 정수로 변환
         df['YEAR_INT'] = df['YEAR'].astype(int)
@@ -103,4 +103,5 @@ try:
 
 except Exception as e:
     st.error(f"오류가 발생했습니다: {e}")
+
     st.info("데이터 파일의 구조를 확인해주세요. 'data/sunspots.csv' 파일이 존재하고 'YEAR'와 'SUNACTIVITY' 컬럼이 있어야 합니다.")
